@@ -4,19 +4,20 @@ from django.contrib.auth.hashers import check_password
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from recipes.models import (AmountIngredient, FavoriteRecipe, Ingredient, Recipe,
-                         ShoppingList, Tag)
+from recipes.models import (AmountIngredient, FavoriteRecipe, Ingredient,
+                            Recipe, ShoppingList, Tag)
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.models import Follow, User
-from .filters import RecipeFilterBackend, IngredientSearchFilterBackend
+
+from .filters import IngredientSearchFilterBackend, RecipeFilterBackend
+from .pagination import PageLimitPaginator, delete_old_ingredients
 from .permissions import RecipePermission, UserPermission
 from .serializers import (FollowSerializer, FullRecipeSerializer,
                           IngredientSerializer, PasswordSerializer,
                           RecordRecipeSerializer, SmallRecipeSerializer,
                           TagSerializer, UserSerializer)
-from .pagination import PageLimitPaginator, delete_old_ingredients
 
 
 class UserViewSet(
@@ -136,7 +137,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecordRecipeSerializer
         return FullRecipeSerializer
 
-    def destroy(self, request, *args, **kwargs):
+    def destroy(self):
         instance = self.get_object()
         delete_old_ingredients(instance)
         self.perform_destroy(instance)

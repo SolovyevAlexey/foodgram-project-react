@@ -3,6 +3,7 @@ from drf_extra_fields.fields import Base64ImageField
 from recipes.models import AmountIngredient, Ingredient, Recipe, Tag
 from rest_framework import serializers
 from users.models import User
+
 from .pagination import delete_old_ingredients
 
 
@@ -146,6 +147,18 @@ class FullRecipeSerializer(serializers.ModelSerializer):
             return True
         return False
 
+    def validate_ingredients(self, value):
+        ingredients = value
+        ingredients_list = []
+        for item in ingredients:
+            ingredient = item["ingredient"].id
+            if ingredient in ingredients_list:
+                raise serializers.ValidationError({
+                    'ingredients': 'Ингридиенты не могут повторяться!'
+                })
+            ingredients_list.append(ingredient)
+        return value
+
 
 class RecordRecipeSerializer(FullRecipeSerializer):
     tags = serializers.PrimaryKeyRelatedField(
@@ -171,14 +184,12 @@ class RecordRecipeSerializer(FullRecipeSerializer):
                 Ingredient,
                 pk=new_ingredient['id']
             )
-            amount_ingredient, created = (
+            amount_ingredient = (
                 AmountIngredient.objects.get_or_create(
                     ingredient=ingredient,
                     amount=new_ingredient['amount']
                 )
             )
-            if created:
-                amount_ingredient.save()
             queryset_amount_ingredients.append(amount_ingredient)
         return queryset_tags, queryset_amount_ingredients
 
