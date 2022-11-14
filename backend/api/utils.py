@@ -8,8 +8,5 @@ class PageLimitPaginator(PageNumberPagination):
 
 
 def delete_old_ingredients(recipe):
-    old_ingredients = recipe.ingredients.all()
-    for old_ingredient in old_ingredients:
-        if old_ingredient.recipes.count() == 1:
-            old_ingredient.delete()
-# сделано так, чтобы не было R504 flake8
+    old_ingredients = recipe.ingredients.all().delete()
+    return old_ingredients
