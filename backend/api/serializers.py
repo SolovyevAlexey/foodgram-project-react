@@ -1,9 +1,9 @@
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
-from food.models import AmountIngredient, Ingredient, Recipe, Tag
 from rest_framework import serializers
 from users.models import User
-# в чем ошибка импортов? Я даже через isort проверял
+from food.models import AmountIngredient, Ingredient, Recipe, Tag
+
 from .utils import delete_old_ingredients
 
 
@@ -211,7 +211,7 @@ class RecordRecipeSerializer(FullRecipeSerializer):
             ingredient = item["ingredient"].id
             if ingredient in ingredients_list:
                 raise serializers.ValidationError({
-                    'ingredients': 'Ингридиенты не могут повторяться!'
+                    'ingredients': 'Ингредиенты не могут повторяться!'
                 })
             ingredients_list.append(ingredient)
         return value
