@@ -59,6 +59,7 @@ jobs:
               cd foodgram-project-react/infra
               sudo docker-compose stop
               sudo docker container rm infra_backend_1
+              sudo docker pull alexeysolovyev1/infra_image
               sudo docker rmi alexeysolovyev1/foodgram:latest
               touch .env
               echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
