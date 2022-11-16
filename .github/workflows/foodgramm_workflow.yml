@@ -56,7 +56,7 @@ jobs:
             key: ${{ secrets.SSH_KEY }}
             passphrase: ${{ secrets.PASSPHRASE }}
             script: |
-              git clone git@github.com:SolovyevAlexey/foodgram-project-react.gi
+              git clone git@github.com:SolovyevAlexey/foodgram-project-react.git
               cd foodgram-project-react/infra
               sudo docker pull alexeysolovyev1/foodgram:latest
               sudo docker-compose stop
