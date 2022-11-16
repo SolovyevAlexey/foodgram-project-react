@@ -4,13 +4,13 @@ from django.contrib.auth.hashers import check_password
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from food.models import (AmountIngredient, FavoriteRecipe, Ingredient, Recipe,
-                         ShoppingList, Tag)
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from users.models import Follow, User
 
+from users.models import Follow, User
+from food.models import (AmountIngredient, FavoriteRecipe, Ingredient, Recipe,
+                         ShoppingList, Tag)
 from .filters import IngredientSearchFilterBackend, RecipeFilterBackend
 from .permissions import RecipePermission, UserPermission
 from .serializers import (FollowSerializer, FullRecipeSerializer,
