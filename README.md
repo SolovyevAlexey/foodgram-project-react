@@ -1,8 +1,7 @@
 Сервис FoodGramm «Продуктовый помощник» 
 ![example workflow](https://github.com/SolovyevAlexey/foodgram-project-react/actions/workflows/foodgramm_workflow.yml/badge.svg)
 =====
-http://130.193.49.142 
-Админка: Admin, password admin
+
 Описание проекта
 ----------
 
