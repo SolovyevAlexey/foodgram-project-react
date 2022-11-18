@@ -208,7 +208,7 @@ class RecordRecipeSerializer(FullRecipeSerializer):
         ingredients = value
         ingredients_list = []
         for item in ingredients:
-            ingredient = item[id]
+            ingredient = item["name"].id
             if ingredient in ingredients_list:
                 raise serializers.ValidationError({
                     'ingredients': 'Ингредиенты не могут повторяться!'
