@@ -4,7 +4,6 @@ from rest_framework import serializers
 
 from users.models import User
 from food.models import AmountIngredient, Ingredient, Recipe, Tag
-from .utils import delete_old_ingredients
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -197,13 +196,18 @@ class RecordRecipeSerializer(FullRecipeSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        delete_old_ingredients(instance)
-        queryset_tags, queryset_amount_ingredients = (
-            self.taking_validated_data(validated_data)
-        )
-        super().update(instance, validated_data)
-        instance.tags.set(queryset_tags)
-        instance.ingredients.set(queryset_amount_ingredients)
+        instance.image = validated_data.get('image', instance.image)
+        instance.name = validated_data.get('name', instance.name)
+        instance.text = validated_data.get('text', instance.text)
+        instance.cooking_time = validated_data.get('cooking_time',
+                                                   instance.cooking_time)
+        instance.tags.clear()
+        tags = self.initial_data.get('tags')
+        instance.tags.set(tags)
+        instance.save()
+        Recipe.objects.filter(recipe=instance).delete()
+        ingredients_set = self.initial_data.get('ingredients')
+        self.ingredient_recipe_create(ingredients_set, instance)
         return instance
 
     def validate_ingredients(self, data):
