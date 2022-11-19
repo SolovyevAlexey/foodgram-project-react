@@ -217,5 +217,3 @@ class RecordRecipeSerializer(FullRecipeSerializer):
                     ingredients_list.get('amount')
                 )
             return data
-        else:
-            raise serializers.ValidationError(('Добавьте ингредиент в рецепт'))
