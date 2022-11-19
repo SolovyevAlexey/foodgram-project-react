@@ -203,11 +203,3 @@ class RecordRecipeSerializer(FullRecipeSerializer):
         instance.tags.set(queryset_tags)
         instance.ingredients.set(queryset_amount_ingredients)
         return instance
-
-    def validate_ingredients(self, data):
-        ingredients = self.initial_data.get('ingredients')
-        if len(ingredients) <= 0:
-            raise serializers.ValidationError(
-                'ingredients обязательное поле.'
-            )
-        return data
