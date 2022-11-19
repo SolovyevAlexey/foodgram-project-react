@@ -172,12 +172,14 @@ class RecordRecipeSerializer(FullRecipeSerializer):
                 Ingredient,
                 pk=new_ingredient['id']
             )
-            amount_ingredient = (
+            amount_ingredient, created = (
                 AmountIngredient.objects.get_or_create(
                     ingredient=ingredient,
                     amount=new_ingredient['amount']
                 )
             )
+            if created:
+                amount_ingredient.save()
             queryset_amount_ingredients.append(amount_ingredient)
         return queryset_tags, queryset_amount_ingredients
 
