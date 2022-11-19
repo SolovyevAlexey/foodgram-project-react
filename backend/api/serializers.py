@@ -204,12 +204,14 @@ class RecordRecipeSerializer(FullRecipeSerializer):
         instance.ingredients.set(queryset_amount_ingredients)
         return instance
 
-    def validate_ingredients(self, data):
-        ingredients = self.initial_data.get('ingredients')
+    def validate_ingredients(self, value):
+        ingredients = value
         ingredients_list = []
-        if ingredients:
-            for ingredient in ingredients:
-                if ingredient.get('id', 'amount') in ingredients_list:
-                    raise serializers.ValidationError(('Повтор ингредиента!'))
-                ingredients_list.append(ingredient)
-        return data
+        for item in ingredients:
+            ingredient = get_object_or_404(Ingredient, id=item['id'])
+            if ingredient in ingredients_list:
+                raise serializers.ValidationError({
+                    'ingredients': 'Ингридиенты не могут повторяться!'
+                })
+            ingredients_list.append(ingredient)
+        return value
