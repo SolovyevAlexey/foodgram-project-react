@@ -207,8 +207,7 @@ class RecordRecipeSerializer(FullRecipeSerializer):
     def validate_ingredients(self, value):
         ingredients = value
         ingredients_list = []
-        for item in ingredients:
-            ingredient = get_object_or_404(Ingredient, id=item['id'])
+        for ingredient in ingredients:
             if ingredient in ingredients_list:
                 raise serializers.ValidationError({
                     'ingredients': 'Ингридиенты не могут повторяться!'
