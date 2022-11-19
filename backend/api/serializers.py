@@ -204,7 +204,10 @@ class RecordRecipeSerializer(FullRecipeSerializer):
         instance.ingredients.set(queryset_amount_ingredients)
         return instance
 
-    def validate_ingredients(self, data):
+    def validate_ingredients(self, validated_data, instance):
+        queryset_tags, queryset_amount_ingredients = (
+            self.taking_validated_data(validated_data)
+        )
         ingredients = self.initial_data.get('ingredients')
         ingredients_list = {}
         if ingredients:
@@ -214,11 +217,6 @@ class RecordRecipeSerializer(FullRecipeSerializer):
                 ingredients_list[ingredient.get('id')] = (
                     ingredients_list.get('amount')
                 )
-        return data
-
-    def ingredient_recipe_create(self, ingredients_set, recipe):
-        for ingredient_get in ingredients_set:
-            ingredient = Ingredient.objects.get(id=ingredient_get.get('id'))
-            Recipe.objects.create(ingredient=ingredient,
-                                  recipe=recipe,
-                                  amount=ingredient_get.get('amount'))
+        instance.tags.set(queryset_tags)
+        instance.ingredients.set(queryset_amount_ingredients)
+        return instance
