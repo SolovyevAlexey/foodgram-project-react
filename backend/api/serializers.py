@@ -209,7 +209,7 @@ class RecordRecipeSerializer(FullRecipeSerializer):
         ingredients_list = []
         if ingredients:
             for ingredient in ingredients:
-                if ingredient.get('id', 'name') in ingredients_list:
+                if ingredient.get('id', 'amount') in ingredients_list:
                     raise serializers.ValidationError(('Повтор ингредиента!'))
                 ingredients_list.append(ingredient)
         return data
