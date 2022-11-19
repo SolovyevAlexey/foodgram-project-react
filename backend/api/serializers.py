@@ -204,19 +204,10 @@ class RecordRecipeSerializer(FullRecipeSerializer):
         instance.ingredients.set(queryset_amount_ingredients)
         return instance
 
-    def validate_ingredients(self, validated_data, instance):
-        queryset_tags, queryset_amount_ingredients = (
-            self.taking_validated_data(validated_data)
-        )
+    def validate_ingredients(self, data):
         ingredients = self.initial_data.get('ingredients')
-        ingredients_list = {}
-        if ingredients:
-            for ingredient in ingredients:
-                if ingredient.get('id') in ingredients_list:
-                    raise serializers.ValidationError(('Повтор ингредиента!'))
-                ingredients_list[ingredient.get('id')] = (
-                    ingredients_list.get('amount')
-                )
-        instance.tags.set(queryset_tags)
-        instance.ingredients.set(queryset_amount_ingredients)
-        return instance
+        if len(ingredients) <= 0:
+            raise serializers.ValidationError(
+                'ingredients обязательное поле.'
+            )
+        return data
