@@ -17,7 +17,7 @@ from .serializers import (FollowSerializer, FullRecipeSerializer,
                           IngredientSerializer, PasswordSerializer,
                           RecordRecipeSerializer, SmallRecipeSerializer,
                           TagSerializer, UserSerializer)
-from .utils import PageLimitPaginator
+from .utils import PageLimitPaginator, delete_old_ingredients
 
 
 class UserViewSet(
@@ -136,6 +136,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.action == 'create' or self.action == 'partial_update':
             return RecordRecipeSerializer
         return FullRecipeSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        delete_old_ingredients(instance)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=False,
