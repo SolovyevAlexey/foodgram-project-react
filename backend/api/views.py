@@ -145,7 +145,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        methods=['PUT'],
+        methods=['GET'],
         permission_classes=(permissions.IsAuthenticated,),
     )
     def download_shopping_cart(self, request):
