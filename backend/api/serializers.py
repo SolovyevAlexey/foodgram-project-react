@@ -203,14 +203,19 @@ class RecordRecipeSerializer(FullRecipeSerializer):
         recipe.tags.set(tags)
         return super().update(recipe, validated_data)
 
-    def validate_ingredients(self, data):
-        ingredients = self.initial_data.get('ingredients')
-        ingredients_list = {}
-        if ingredients:
-            for ingredient in ingredients:
-                if ingredient.get('id') in ingredients_list:
-                    raise serializers.ValidationError(('Повтор ингредиента!'))
-                ingredients_list[ingredient.get('id')] = (
-                    ingredients_list.get('amount')
+    def validate_ingredients(self, ingredients):
+        if not ingredients:
+            raise serializers.ValidationError(
+                'Необходимо выбрать ингредиенты!'
+            )
+        for ingredient in ingredients:
+            if int(ingredient['amount']) <= 0:
+                raise serializers.ValidationError(
+                    'Количество ингредиентов должно быть больше нуля!'
                 )
-        return data
+        ids = [item['id'] for item in ingredients]
+        if len(ids) != len(set(ids)):
+            raise serializers.ValidationError(
+                'Ингредиенты в рецепте должны быть уникальными!'
+            )
+        return ingredients
