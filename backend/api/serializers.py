@@ -197,6 +197,18 @@ class RecordRecipeSerializer(FullRecipeSerializer):
         return recipe
 
     def update(self, instance, validated_data):
+        instance.image = validated_data.get('image', instance.image)
+        instance.name = validated_data.get('name', instance.name)
+        instance.text = validated_data.get('text', instance.text)
+        instance.cooking_time = validated_data.get('cooking_time',
+                                                   instance.cooking_time)
+        instance.tags.clear()
+        tags = self.initial_data.get('tags')
+        instance.tags.set(tags)
+        instance.save()
+        Recipe.objects.filter(recipe=instance).delete()
+        ingredients_set = self.initial_data.get('ingredients')
+        self.ingredient_recipe_create(ingredients_set, instance)
         delete_old_ingredients(instance)
         queryset_tags, queryset_amount_ingredients = (
             self.taking_validated_data(validated_data)
