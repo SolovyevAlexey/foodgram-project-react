@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from users.models import User
 from food.models import AmountIngredient, Ingredient, Recipe, Tag
+from .utils import delete_old_ingredients
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -195,27 +196,24 @@ class RecordRecipeSerializer(FullRecipeSerializer):
         recipe.ingredients.set(queryset_amount_ingredients)
         return recipe
 
-    def update(self, recipe, validated_data):
-        ingredients = validated_data.pop('ingredients')
-        tags = validated_data.pop('tags')
-        Recipe.objects.filter(recipe=recipe).delete()
-        self.add_ingredients(ingredients, recipe)
-        recipe.tags.set(tags)
-        return super().update(recipe, validated_data)
+    def update(self, instance, validated_data):
+        delete_old_ingredients(instance)
+        queryset_tags, queryset_amount_ingredients = (
+            self.taking_validated_data(validated_data)
+        )
+        super().update(instance, validated_data)
+        instance.tags.set(queryset_tags)
+        instance.ingredients.set(queryset_amount_ingredients)
+        return instance
 
-    def validate_ingredients(self, ingredients):
-        if not ingredients:
-            raise serializers.ValidationError(
-                'Необходимо выбрать ингредиенты!'
-            )
-        for ingredient in ingredients:
-            if int(ingredient['amount']) <= 0:
-                raise serializers.ValidationError(
-                    'Количество ингредиентов должно быть больше нуля!'
+    def validate_ingredients(self, data):
+        ingredients = self.initial_data.get('ingredients')
+        ingredients_list = {}
+        if ingredients:
+            for ingredient in ingredients:
+                if ingredient.get('id') in ingredients_list:
+                    raise serializers.ValidationError(('Повтор ингредиента!'))
+                ingredients_list[ingredient.get('id')] = (
+                    ingredients_list.get('amount')
                 )
-        ids = [item['id'] for item in ingredients]
-        if len(ids) != len(set(ids)):
-            raise serializers.ValidationError(
-                'Ингредиенты в рецепте должны быть уникальными!'
-            )
-        return ingredients
+        return data
