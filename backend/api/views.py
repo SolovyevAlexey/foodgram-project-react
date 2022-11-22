@@ -107,7 +107,6 @@ class FollowViewSet(viewsets.ViewSet):
             data_follow.delete()
             return Response(status.HTTP_204_NO_CONTENT)
         return Response(status.HTTP_400_BAD_REQUEST)
-    print(destroy)
 
 
 class TagViewSet(

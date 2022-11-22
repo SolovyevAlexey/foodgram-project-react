@@ -16,6 +16,7 @@ router_api.register('ingredients', IngredientViewSet)
 router_api.register('recipes', RecipeViewSet)
 
 urlpatterns = [
+    path('accounts/', include('django.contrib.auth.urls')),
     path('auth/token/login/', TokenCreateView.as_view(), name='token_login'),
     path(
         'auth/token/logout/', TokenDestroyView.as_view(), name='token_logout'
